@@ -1,0 +1,40 @@
+<resources>
+    <string name="facebook_application_id" translatable="false">1317965385763748</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb1317965385763748</string>
+
+    <string name="app_name">UnNet</string>
+    <string name="placeholder_multiline">Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        Ut enim ad minim veniam,
+        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+        Excepteur sint occaecat cupidatat non proident,
+        sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </string>
+    <string name="sign_in_text">Successfully signed in</string>
+    <string name="sign_in_cancelled">Sign in cancelled by user</string>
+    <string name="no_internet_connection">Error: No internet connection</string>
+    <string name="unknown_error">Error:Unknown Error</string>
+    <string name="home_profile_text">My Profile</string>
+    <string name="home_sign_out_text">Sign out</string>
+    <string name="home_text">Home</string>
+    <string name="add_post_text">Add post</string>
+    <string name="search_text">Search</string>
+    <string name="add_text_post">Add text post</string>
+    <string name="posted_successfully_text">Posted successfully</string>
+    <string name="posting_failed_text">Posting failed</string>
+    <string name="likes_text">%s Likes</string>
+    <string name="post_heart_desc">Heart image for liking post</string>
+    <string name="share_text">%s reshared</string>
+    <string name="comments_text">%s comments</string>
+    <string name="search_hint">User\'s name</string>
+    <string name="profile_string">%s\'s profile</string>
+    <string name="follow_text">Follow</string>
+    <string name="left_follow_desc">Left Image for follow</string>
+    <string name="message_text">Message</string>
+    <string name="left_message_desc">left image for message</string>
+    <string name="follower_text">Followers</string>
+    <string name="placeholder_number">0</string>
+    <string name="posts_text">Posts</string>
+    <string name="following_text">Following</string>
+</resources>

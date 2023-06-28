@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/post"
+        android:icon="@drawable/baseline_home_48"
+        android:iconTint="?android:textColor"
+        android:title="@string/home_text" />
+    <item
+        android:id="@+id/add_post"
+        android:icon="@drawable/baseline_add_48"
+        android:iconTint="?android:textColor"
+        android:title="@string/add_post_text" />
+    <item
+        android:id="@+id/search"
+        android:icon="@drawable/baseline_search_48"
+        android:iconTint="?android:textColor"
+        android:title="@string/search_text" />
+</menu>

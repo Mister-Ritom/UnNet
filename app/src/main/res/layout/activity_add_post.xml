@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".home.post.PostAddActivity"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:titleCentered="true"
+        app:title="@string/add_post_text"
+        app:logo="@drawable/baseline_add_48"
+        />
+
+    <EditText
+        android:id="@+id/post_add_text"
+        android:layout_width="match_parent"
+        android:layout_height="256dp"
+        android:ems="10"
+        android:inputType="textMultiLine"
+        android:autofillHints="text"
+        android:hint="@string/add_text_post"
+        android:gravity="top"
+        android:layout_margin="@dimen/default_margin"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/post_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add_post_text"
+        android:layout_gravity="end"
+        app:icon="@drawable/baseline_add_48"
+        app:elevation="@dimen/default_elevation"
+        app:fontFamily="@font/open_sans"
+        android:textColor="?android:textColor"
+        app:iconTint="?android:textColor"
+        app:backgroundTint="@color/green"
+        />
+
+</LinearLayout>

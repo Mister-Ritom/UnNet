@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "283670748868",
+    "firebase_url": "https://unnet-unreel-default-rtdb.firebaseio.com",
+    "project_id": "unnet-unreel",
+    "storage_bucket": "unnet-unreel.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:283670748868:android:090038813a2aceadb07391",
+        "android_client_info": {
+          "package_name": "com.unreelnet.unnet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "283670748868-rg4q33rrsvo5t5u438asfbj7k54au997.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.unreelnet.unnet",
+            "certificate_hash": "4dd80f629464ad619cb43f5a82b137609d768875"
+          }
+        },
+        {
+          "client_id": "283670748868-6ugegddak02sb229is7pk6jfmk3pqf42.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHD_LW-gdX8tvuqSpRUaECOLWrdyVp-II"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "283670748868-6ugegddak02sb229is7pk6jfmk3pqf42.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
