@@ -13,15 +13,15 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.unreelnet.unnet.R
-import com.unreelnet.unnet.home.models.PostModel
-import com.unreelnet.unnet.home.utils.adapters.PostRecyclerViewAdapter
+import com.unreelnet.unnet.models.PostModel
+import com.unreelnet.unnet.utils.adapters.PostRecyclerViewAdapter
 
 
 class PostViewFragment : Fragment() {
 
     private val posts:MutableList<PostModel> = ArrayList()
     private val databaseReference = FirebaseDatabase.getInstance().reference
-    private lateinit var postAdapter:PostRecyclerViewAdapter
+    private lateinit var postAdapter: PostRecyclerViewAdapter
 
     private val tag = "PostViewFragment"
 

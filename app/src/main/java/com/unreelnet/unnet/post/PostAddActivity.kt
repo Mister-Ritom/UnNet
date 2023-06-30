@@ -1,4 +1,4 @@
-package com.unreelnet.unnet.home.post
+package com.unreelnet.unnet.post
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -10,7 +10,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.unreelnet.unnet.R
 import com.unreelnet.unnet.databinding.ActivityAddPostBinding
 import com.unreelnet.unnet.home.HomeActivity
-import com.unreelnet.unnet.home.models.PostModel
+import com.unreelnet.unnet.models.PostModel
 import java.util.UUID
 
 class PostAddActivity : AppCompatActivity() {
@@ -28,7 +28,7 @@ class PostAddActivity : AppCompatActivity() {
                     val time = System.currentTimeMillis()
                     val userId = user.uid
                     val postId = UUID.randomUUID().toString()
-                    val postModel = PostModel(postId,userId,time,text)
+                    val postModel = PostModel(postId,userId,time,text,null,null)
                     databaseReference.child("Posts").child(userId).child(postId).setValue(postModel)
                         .addOnSuccessListener {
                             displayPost(R.string.posted_successfully_text)

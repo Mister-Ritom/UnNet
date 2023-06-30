@@ -11,8 +11,8 @@ import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.FirebaseDatabase
 import com.unreelnet.unnet.R
 import com.unreelnet.unnet.databinding.FragmentUserListBinding
-import com.unreelnet.unnet.home.models.UserModel
-import com.unreelnet.unnet.home.utils.adapters.UserRecyclerViewAdapter
+import com.unreelnet.unnet.models.UserModel
+import com.unreelnet.unnet.utils.adapters.UserRecyclerViewAdapter
 
 class SearchFragment : Fragment() {
 

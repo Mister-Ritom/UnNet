@@ -1,4 +1,4 @@
-package com.unreelnet.unnet.home.utils.adapters
+package com.unreelnet.unnet.utils.adapters
 
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
@@ -12,8 +12,8 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 
 import com.unreelnet.unnet.databinding.ItemUserBinding
-import com.unreelnet.unnet.home.models.UserModel
-import com.unreelnet.unnet.home.profile.ViewProfileActivity
+import com.unreelnet.unnet.models.UserModel
+import com.unreelnet.unnet.profile.ViewProfileActivity
 
 class UserRecyclerViewAdapter(private val context:Context?,options: FirebaseRecyclerOptions<UserModel>)
     : FirebaseRecyclerAdapter<UserModel, UserRecyclerViewAdapter.ViewHolder>(options) {

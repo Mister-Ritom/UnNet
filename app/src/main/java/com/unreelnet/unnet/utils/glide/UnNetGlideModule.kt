@@ -1,4 +1,4 @@
-package com.unreelnet.unnet.home.utils.glide
+package com.unreelnet.unnet.utils.glide
 
 import android.content.Context
 import com.bumptech.glide.Glide

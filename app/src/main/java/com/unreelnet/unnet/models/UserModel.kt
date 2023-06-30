@@ -1,4 +1,4 @@
-package com.unreelnet.unnet.home.models
+package com.unreelnet.unnet.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".home.profile.ViewProfileActivity">
+    tools:context=".profile.ViewProfileActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/profile_toolbar"
@@ -263,14 +263,14 @@
 
     </LinearLayout>
 
-    <GridLayout
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/profile_posts"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/profile_data"
         android:layout_margin="@dimen/default_margin"
-        tools:context=".home.profile.ViewProfileActivity"
-        tools:listitem="@layout/item_image"
+        tools:context=".profile.ViewProfileActivity"
+        tools:listitem="@layout/item_small_post"
         />
 
 </RelativeLayout>

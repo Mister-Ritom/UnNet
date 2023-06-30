@@ -1,4 +1,4 @@
-package com.unreelnet.unnet.home.profile
+package com.unreelnet.unnet.profile
 
 import android.content.Context
 import android.content.Intent
@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
@@ -15,7 +16,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.unreelnet.unnet.R
 import com.unreelnet.unnet.databinding.ActivityViewProfileBinding
-import com.unreelnet.unnet.home.models.UserModel
+import com.unreelnet.unnet.models.UserModel
 
 class ViewProfileActivity : AppCompatActivity() {
     private val tag = "ViewPostActivity"
@@ -38,6 +39,9 @@ class ViewProfileActivity : AppCompatActivity() {
                 Glide.with(this).load(user.profileImage).dontAnimate().into(binding.profileImage)
                 Glide.with(this).load(user.profileImage).dontAnimate().into(binding.profileToolbarImage)
                 binding.profileToolbar.title = getString(R.string.profile_string,user.name)
+                getPosts(user.userId,binding.profilePostsNumber)
+
+
                 if (user.userId == currentUser.uid) {
                     binding.profileButtons.visibility = View.GONE
                 }
@@ -47,6 +51,7 @@ class ViewProfileActivity : AppCompatActivity() {
                         failure("Coming soon",null)
                     }
                 }
+
             }
             else {
                 Log.e(tag,"User is null")
@@ -57,6 +62,23 @@ class ViewProfileActivity : AppCompatActivity() {
             Log.e(tag,"Intent extras are null")
             finish()
         }
+    }
+
+
+    private fun getPosts(userId: String,postsNumber:TextView) {
+        databaseReference.child("Posts").child(userId)
+            .addListenerForSingleValueEvent(object:ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        postsNumber.text = snapshot.childrenCount.toString()
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    failure("Couldn't get posts",error.toException())
+                }
+
+            })
     }
 
     private fun getFollowingStatus(currentUserId:String,userId:String) {
@@ -108,10 +130,9 @@ class ViewProfileActivity : AppCompatActivity() {
             })
     }
 
-
     private fun following(currentUserId: String,userId: String) {
         binding.profileFollowText.text = getString(R.string.following_text)
-        binding.profileFollowersCard.setOnClickListener {
+        binding.profileFollowCard.setOnClickListener {
             databaseReference.child("Followers").child(userId)
                 .orderByValue().equalTo(currentUserId).ref.setValue(null).addOnSuccessListener {
                     databaseReference.child("Following").child(currentUserId)
@@ -164,8 +185,8 @@ class ViewProfileActivity : AppCompatActivity() {
 
 
     companion object {
-        fun startProfileActivity(context: Context, user:UserModel) {
-            val intent = Intent(context,ViewProfileActivity::class.java)
+        fun startProfileActivity(context: Context, user: UserModel) {
+            val intent = Intent(context, ViewProfileActivity::class.java)
             intent.putExtra("user",user)
             context.startActivity(intent)
         }

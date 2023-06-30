@@ -1,9 +1,10 @@
-package com.unreelnet.unnet.home.utils.adapters
+package com.unreelnet.unnet.utils.adapters
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.PorterDuff
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,8 +20,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.unreelnet.unnet.R
 import com.unreelnet.unnet.databinding.ItemPostBinding
-import com.unreelnet.unnet.home.models.PostModel
-import com.unreelnet.unnet.home.models.UserModel
+import com.unreelnet.unnet.models.PostModel
+import com.unreelnet.unnet.models.UserModel
 
 
 class PostRecyclerViewAdapter(private val context: Context?,private val posts:List<PostModel>)
@@ -45,7 +46,7 @@ class PostRecyclerViewAdapter(private val context: Context?,private val posts:Li
         return posts.size
     }
 
-    private fun setupUser(post:PostModel,holder: ViewHolder) {
+    private fun setupUser(post: PostModel, holder: ViewHolder) {
        databaseReference.child("Users/${post.uploaderId}")
             .addListenerForSingleValueEvent(object:ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -69,9 +70,29 @@ class PostRecyclerViewAdapter(private val context: Context?,private val posts:Li
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val model = posts[position]
+
+        if (model.text==null)holder.postText.visibility = View.GONE
+        else holder.postText.visibility = View.VISIBLE
+        if (model.imageUri==null)holder.postImage.visibility = View.GONE
+        else{
+            Glide.with(holder.itemView).load(model.imageUri).into(holder.postImage)
+            holder.postImage.visibility = View.VISIBLE
+        }
+        if (model.videoUri==null)holder.postVideo.visibility = View.GONE
+        else {
+            holder.postVideo.visibility = View.VISIBLE
+            holder.postVideo.setVideoURI(Uri.parse(model.videoUri))
+            holder.postVideo.start()
+            holder.postVideo.setOnClickListener {
+                if (holder.postVideo.isPlaying)holder.postVideo.pause()
+                else holder.postVideo.start()
+            }
+        }
+
+
         setupUser(model,holder)
         val currentUser = FirebaseAuth.getInstance().currentUser
-        holder.contentView.text = model.text
+        holder.postText.text = model.text
         holder.commentText.text = context?.getString(R.string.comments_text,model.comments.size.toString())
         holder.shareText.text = context?.getString(R.string.share_text,model.shares.size.toString())
         holder.likeText.text = context?.getString(R.string.likes_text,model.likes.size.toString())
@@ -120,7 +141,6 @@ class PostRecyclerViewAdapter(private val context: Context?,private val posts:Li
         val scaleDownY = ObjectAnimator.ofFloat(view, "scaleY", 0.1f, 1f)
         scaleDownY.duration = 300
         scaleDownY.interpolator = accelerateInterpolator
-
         val scaleDownX = ObjectAnimator.ofFloat(view, "scaleX", 0.1f, 1f)
         scaleDownX.duration = 300
         scaleDownX.interpolator = accelerateInterpolator
@@ -129,7 +149,6 @@ class PostRecyclerViewAdapter(private val context: Context?,private val posts:Li
     }
     
     inner class ViewHolder(binding: ItemPostBinding) : RecyclerView.ViewHolder(binding.root) {
-        val contentView = binding.postText
         val userName = binding.postUserName
         val userId = binding.postUserId
         val userImage = binding.postUserImage
@@ -142,6 +161,9 @@ class PostRecyclerViewAdapter(private val context: Context?,private val posts:Li
         val reShareCard = binding.postShareCard
         val shareImage = binding.postShare
         val shareText = binding.postShareText
+        val postText = binding.postText
+        val postImage = binding.postImage
+        val postVideo = binding.postVideo
     }
 
 }

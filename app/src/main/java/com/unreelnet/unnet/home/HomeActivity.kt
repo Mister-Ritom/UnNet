@@ -28,8 +28,8 @@ import com.unreelnet.unnet.databinding.ActivityHomeBinding
 import com.unreelnet.unnet.home.fragments.PostAddFragment
 import com.unreelnet.unnet.home.fragments.PostViewFragment
 import com.unreelnet.unnet.home.fragments.SearchFragment
-import com.unreelnet.unnet.home.models.UserModel
-import com.unreelnet.unnet.home.profile.ViewProfileActivity
+import com.unreelnet.unnet.models.UserModel
+import com.unreelnet.unnet.profile.ViewProfileActivity
 import java.io.ByteArrayOutputStream
 import java.util.UUID
 
@@ -55,6 +55,7 @@ class HomeActivity : AppCompatActivity(),OnItemSelectedListener {
             .setLogo(R.mipmap.ic_launcher)
             .setTheme(R.style.Theme_UnNet)
             .setAvailableProviders(providers)
+            .setTosAndPrivacyPolicyUrls("https://www.anons.cloud/terms","https://www.anons.cloud/privacy")
             .build()
 
 
@@ -93,7 +94,7 @@ class HomeActivity : AppCompatActivity(),OnItemSelectedListener {
         )
     }
 
-    private fun setupView(user:UserModel) {
+    private fun setupView(user: UserModel) {
         Glide.with(this).load(user.profileImage).dontAnimate().into(binding.homeProfileImage)
         binding.homeProfileImage.setOnClickListener {
             val popup = PopupMenu(this@HomeActivity,binding.homeProfileImage)
