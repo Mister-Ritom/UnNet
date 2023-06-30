@@ -62,7 +62,7 @@
         android:layout_marginEnd="@dimen/default_margin"
         android:layout_marginBottom="@dimen/default_margin"
         android:letterSpacing="0.1"
-        android:maxLength="500"
+        android:maxLength="400"
         android:text="@string/placeholder_multiline"
         android:textAppearance="?attr/textAppearanceListItem"
         android:textSize="20sp"
@@ -100,11 +100,22 @@
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <View
+        android:id="@+id/post_separator_1"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?android:textColor"
+        android:layout_marginHorizontal="12dp"
+        android:layout_below="@id/post_parent"
+        android:layout_marginVertical="@dimen/default_margin"
+        />
+
     <LinearLayout
+        android:id="@+id/post_engagement_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/post_parent"
-        android:layout_marginHorizontal="8dp"
+        android:layout_below="@id/post_separator_1"
+        android:layout_marginHorizontal="4dp"
         android:layout_marginBottom="8dp"
         >
         <com.google.android.material.card.MaterialCardView
@@ -125,14 +136,14 @@
                     android:src="@drawable/baseline_heart_24"
                     android:layout_gravity="center"
                     android:layout_marginEnd="2dp"
-                    android:padding="4dp"
+                    android:padding="3dp"
                     android:contentDescription="@string/post_heart_desc" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/post_like_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="6dp"
+                    android:padding="4dp"
                     android:text="@string/likes_text"
                     android:textSize="18sp" />
             </LinearLayout>
@@ -156,14 +167,14 @@
                     android:layout_gravity="center"
                     android:layout_marginEnd="2dp"
                     android:contentDescription="@string/post_heart_desc"
-                    android:padding="4dp"
+                    android:padding="3dp"
                     android:src="@drawable/baseline_chat_bubble_outline_24" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/post_comment_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="6dp"
+                    android:padding="4dp"
                     android:text="@string/comments_text"
                     android:textSize="18sp" />
             </LinearLayout>
@@ -186,18 +197,51 @@
                     android:layout_gravity="center"
                     android:layout_marginEnd="2dp"
                     android:contentDescription="@string/post_heart_desc"
-                    android:padding="4dp"
+                    android:padding="3dp"
                     android:src="@drawable/baseline_repeat_24" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/post_share_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="6dp"
+                    android:padding="3dp"
                     android:text="@string/share_text"
                     android:textSize="18sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
+    <View
+        android:id="@+id/post_separator_2"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?android:textColor"
+        android:layout_marginHorizontal="12dp"
+        android:layout_below="@id/post_engagement_layout"
+        android:layout_marginBottom="@dimen/default_margin"
+        />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/default_margin"
+        android:layout_below="@id/post_separator_2"
+        >
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/post_shared_by_image"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginEnd="@dimen/default_margin"
+            />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/post_shared_by_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/shared_by_text"
+            android:textSize="20sp"
+            android:textColor="@color/gray"
+            />
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 </RelativeLayout>

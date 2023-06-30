@@ -41,6 +41,7 @@ class MediaPostAddActivity : AppCompatActivity() {
         binding.postBack.setOnClickListener {
             finish()
         }
+        binding.postProgressLayout.visibility = View.GONE
         if (intent.extras!=null) {
             mediaType = intent.extras!!.getSerializable("mediaType") as MediaTypes?
             if (mediaType!=null) {
@@ -79,6 +80,7 @@ class MediaPostAddActivity : AppCompatActivity() {
     }
 
     private fun uploadPost() {
+        binding.postProgressLayout.visibility = View.VISIBLE
         val postUid = UUID.randomUUID().toString()
         if (uri!=null&&mediaType!=null&&user!=null) {
             FirebaseStorage.getInstance().reference
@@ -116,7 +118,17 @@ class MediaPostAddActivity : AppCompatActivity() {
             val postModel = PostModel(uid,user!!.uid,System.currentTimeMillis(),text,
                 if (mediaType == MediaTypes.VIDEO)null else storageUri.toString(),
                 if (mediaType == MediaTypes.VIDEO) storageUri.toString() else null)
-            database.child("Posts").child(user!!.uid).child(uid).setValue(postModel)
+            database.child("Posts").child(user!!.uid).child(uid)
+                .setValue(postModel).addOnSuccessListener {
+                finish()
+            }
+                .addOnFailureListener {
+                    displayToast("technical error")
+                    FirebaseStorage.getInstance().reference
+                        .child("Posts").child(user!!.uid).child(mediaType!!.name).child(uid)
+                        .delete()
+                    finish()
+                }
         } else {
             displayToast("Something went wrong")
             finish()

@@ -151,24 +151,29 @@
         
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/post_sent_progress"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:indeterminate="false"
-        android:progress="0"
-        android:progressDrawable="@drawable/circular_progress_drawable"
-        android:layout_centerInParent="true"
-        />
-
-    <TextView
-        android:id="@+id/progressText"
+    <RelativeLayout
+        android:id="@+id/post_progress_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/placeholder_number"
-        android:textSize="20sp"
-        android:gravity="center"
         android:layout_centerInParent="true"
-        />
+        >
+        <ProgressBar
+            android:id="@+id/post_sent_progress"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:indeterminate="false"
+            android:progress="0"
+            android:progressDrawable="@drawable/circular_progress_drawable"
+            />
+
+        <TextView
+            android:id="@+id/progressText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/placeholder_number"
+            android:textSize="20sp"
+            android:layout_centerInParent="true"
+            />
+    </RelativeLayout>
 
 </RelativeLayout>

@@ -27,7 +27,7 @@
     <string name="posting_failed_text">Posting failed</string>
     <string name="likes_text">%s Likes</string>
     <string name="post_heart_desc">Heart image for liking post</string>
-    <string name="share_text">%s re shared</string>
+    <string name="share_text">%s ReShared</string>
     <string name="comments_text">%s comments</string>
     <string name="search_hint">User\'s name</string>
     <string name="profile_string">%s\'s profile</string>
@@ -51,5 +51,6 @@
     <string name="uploading_text">Uploading your beautiful post 😍</string>
     <string name="uploaded_text">Your post successfully uploaded 😎</string>
     <string name="database_adding_text">Adding to database 😊</string>
+    <string name="shared_by_text">Shared by %s</string>
 
 </resources>

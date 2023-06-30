@@ -22,6 +22,7 @@ import com.unreelnet.unnet.R
 import com.unreelnet.unnet.databinding.ItemPostBinding
 import com.unreelnet.unnet.models.PostModel
 import com.unreelnet.unnet.models.UserModel
+import com.unreelnet.unnet.profile.ViewProfileActivity
 
 
 class PostRecyclerViewAdapter(private val context: Context?,private val posts:List<PostModel>)
@@ -55,6 +56,37 @@ class PostRecyclerViewAdapter(private val context: Context?,private val posts:Li
                         holder.userName.text = userModel.name
                         holder.userId.text = userModel.userId
                         Glide.with(holder.itemView).load(userModel.profileImage).into(holder.userImage)
+                        holder.userImage.setOnClickListener {
+                            if (context!=null) {
+                                ViewProfileActivity.startProfileActivity(context,userModel)
+                            }
+                        }
+                    }
+                    else {
+                        Log.e(tag,"User Model is null")
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e(tag,"Couldn't get user",error.toException())
+                }
+
+            })
+    }
+
+    private fun setupSharedBy(sharedBy: String, holder: ViewHolder) {
+        databaseReference.child("Users/$sharedBy")
+            .addListenerForSingleValueEvent(object:ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val userModel = snapshot.getValue(UserModel::class.java)
+                    if (userModel!=null) {
+                        holder.postSharedByText.text = userModel.name
+                        Glide.with(holder.itemView).load(userModel.profileImage).into(holder.postShardByImage)
+                        holder.postShardByImage.setOnClickListener {
+                            if (context!=null) {
+                                ViewProfileActivity.startProfileActivity(context,userModel)
+                            }
+                        }
                     }
                     else {
                         Log.e(tag,"User Model is null")
@@ -89,7 +121,7 @@ class PostRecyclerViewAdapter(private val context: Context?,private val posts:Li
             }
         }
 
-
+        if (model.sharedBy!=null)setupSharedBy(model.sharedBy,holder)
         setupUser(model,holder)
         val currentUser = FirebaseAuth.getInstance().currentUser
         holder.postText.text = model.text
@@ -117,14 +149,17 @@ class PostRecyclerViewAdapter(private val context: Context?,private val posts:Li
                 }
             }
             holder.commentCard.setOnClickListener {
-                animate(holder.commentCard)
+                animate(holder.commentImage)
             }
             holder.reShareCard.setOnClickListener {
-                model.shares.add(currentUserId)
+                val model1 = PostModel(model.postId,model.uploaderId,System.currentTimeMillis(),
+                    model.text,model.imageUri,model.videoUri,model.likes,model.comments,
+                    model.shares,currentUserId)
+                model1.shares.add(currentUserId)
                 databaseReference.child("Posts").child(currentUserId).child(model.postId)
-                    .setValue(model).addOnSuccessListener {
+                    .setValue(model1).addOnSuccessListener {
                         databaseReference.child("Posts/${model.uploaderId}/${model.postId}")
-                            .child("shares").setValue(model.shares).addOnSuccessListener {
+                            .child("shares").setValue(model1.shares).addOnSuccessListener {
                                 animate(holder.shareImage)
                                 Toast.makeText(context,"Shared post",Toast.LENGTH_LONG).show()
                             }
@@ -164,6 +199,8 @@ class PostRecyclerViewAdapter(private val context: Context?,private val posts:Li
         val postText = binding.postText
         val postImage = binding.postImage
         val postVideo = binding.postVideo
+        val postSharedByText = binding.postSharedByName
+        val postShardByImage = binding.postSharedByImage
     }
 
 }
