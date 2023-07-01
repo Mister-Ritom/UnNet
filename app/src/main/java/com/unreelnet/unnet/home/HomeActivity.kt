@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.MenuItem
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import com.avatarfirst.avatargenlib.AvatarGenerator
 import com.bumptech.glide.Glide
@@ -220,7 +221,7 @@ class HomeActivity : AppCompatActivity(),OnItemSelectedListener {
             }
         }
         binding.homeToolbar.title = title
-        binding.homeToolbar.setLogo(logo)
+        binding.homeToolbar.navigationIcon = getDrawable(logo)
         supportFragmentManager.beginTransaction().replace(R.id.home_frame,fragment).commit()
         return true
     }

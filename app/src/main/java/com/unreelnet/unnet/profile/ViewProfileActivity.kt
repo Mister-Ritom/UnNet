@@ -6,9 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.bumptech.glide.Glide
+import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -16,7 +17,9 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.unreelnet.unnet.R
 import com.unreelnet.unnet.databinding.ActivityViewProfileBinding
+import com.unreelnet.unnet.models.PostModel
 import com.unreelnet.unnet.models.UserModel
+import com.unreelnet.unnet.utils.adapters.ProfileRecyclerViewAdapter
 
 class ViewProfileActivity : AppCompatActivity() {
     private val tag = "ViewPostActivity"
@@ -39,7 +42,19 @@ class ViewProfileActivity : AppCompatActivity() {
                 Glide.with(this).load(user.profileImage).dontAnimate().into(binding.profileImage)
                 Glide.with(this).load(user.profileImage).dontAnimate().into(binding.profileToolbarImage)
                 binding.profileToolbar.title = getString(R.string.profile_string,user.name)
-                getPosts(user.userId,binding.profilePostsNumber)
+                val newQuery = databaseReference.child("Posts").child(user.userId)
+                val newOptions = FirebaseRecyclerOptions.Builder<PostModel>()
+                    .setQuery(newQuery, PostModel::class.java)
+                    .build()
+                val newAdapter = object:ProfileRecyclerViewAdapter(this,user,newOptions) {
+                    override fun onDataChanged() {
+                        binding.profilePostsNumber.text = itemCount.toString()
+                        super.onDataChanged()
+                    }
+                }
+                binding.profilePosts.addItemDecoration(DividerItemDecoration(this,DividerItemDecoration.VERTICAL))
+                binding.profilePosts.adapter = newAdapter
+                newAdapter.startListening()
 
 
                 if (user.userId == currentUser.uid) {
@@ -64,41 +79,21 @@ class ViewProfileActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun getPosts(userId: String,postsNumber:TextView) {
-        databaseReference.child("Posts").child(userId)
-            .addListenerForSingleValueEvent(object:ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.exists()) {
-                        postsNumber.text = snapshot.childrenCount.toString()
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    failure("Couldn't get posts",error.toException())
-                }
-
-            })
-    }
-
     private fun getFollowingStatus(currentUserId:String,userId:String) {
         databaseReference.child("Following").child(currentUserId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    //TODO show user whom they are following
+                    //TODO show user the list of whom they are following
                     if (snapshot.exists()) {
                         followingNumber = snapshot.childrenCount.toInt()
                         for (child in snapshot.children) {
                             val id = child.getValue(String::class.java)
                             if (id!=null){
-                                Log.e("WTF",id)
                                 if (id==userId) {
-                                    Log.e("WTF","Yes")
                                     following(currentUserId,userId)
                                     break
                                 }
                                 else {
-                                    Log.e("WTF","No")
                                     follow(currentUserId,userId)
                                     continue
                                 }
@@ -118,7 +113,7 @@ class ViewProfileActivity : AppCompatActivity() {
         databaseReference.child("Followers").child(currentUserId)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    //TODO show user who is following
+                    //TODO show user the list of who is following
                     if (snapshot.exists()) {
                         followersNumber = snapshot.childrenCount.toInt()
                     }

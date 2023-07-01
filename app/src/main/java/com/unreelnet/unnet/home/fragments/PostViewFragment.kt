@@ -1,5 +1,7 @@
 package com.unreelnet.unnet.home.fragments
 
+import android.annotation.SuppressLint
+import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,8 +22,15 @@ import com.unreelnet.unnet.utils.adapters.PostRecyclerViewAdapter
 class PostViewFragment : Fragment() {
 
     private val posts:MutableList<PostModel> = ArrayList()
+    private val postIds:MutableList<String> = ArrayList()
     private val databaseReference = FirebaseDatabase.getInstance().reference
     private lateinit var postAdapter: PostRecyclerViewAdapter
+    private val thread = BackgroundPostAdder{
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser!=null) {
+            getFollowingAndPosts(currentUser.uid)
+        }
+    }
 
     private val tag = "PostViewFragment"
 
@@ -36,12 +45,15 @@ class PostViewFragment : Fragment() {
                 adapter = postAdapter
             }
         }
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser!=null) {
-            getFollowingAndPosts(currentUser.uid)
-        }
+
+        thread.execute()
 
         return view
+    }
+
+    override fun onDestroy() {
+        thread.cancel(false)
+        super.onDestroy()
     }
 
     private fun getFollowingAndPosts(currentUserId: String) {
@@ -78,7 +90,8 @@ class PostViewFragment : Fragment() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (idSnapshot in snapshot.children) {
                         val id = idSnapshot.getValue(String::class.java)
-                        if (id!=null) {
+                        if (id!=null && !postIds.contains(id)) {
+                            postIds.add(id)
                             getPosts(id)
                         }
                         else {
@@ -95,6 +108,7 @@ class PostViewFragment : Fragment() {
             })
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun getPosts(userId:String) {
         databaseReference.child("Posts").child(userId)
             .addValueEventListener(object  : ValueEventListener {
@@ -104,13 +118,14 @@ class PostViewFragment : Fragment() {
                             val postModel = postSnapshot.getValue(PostModel::class.java)
                             if (postModel!=null) {
                                 posts.add(postModel)
-                                postAdapter.notifyItemInserted(posts.size-1)
                             }
                         }
                     }
                     else {
                         Log.d(tag,"User $userId doesn't have any posts")
                     }
+                    postAdapter.posts = posts.sortedByDescending { it.uploadTime }.toMutableList()
+                    postAdapter.notifyDataSetChanged()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -118,6 +133,15 @@ class PostViewFragment : Fragment() {
                 }
 
             })
+
+    }
+
+    class BackgroundPostAdder(private val run:Runnable) : AsyncTask<Unit, Unit, Unit>() {
+        @Deprecated("Deprecated in Java")
+        override fun doInBackground(vararg p0: Unit?) {
+            run.run()
+        }
+
     }
 
 }

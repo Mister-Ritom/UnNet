@@ -12,7 +12,8 @@
         android:layout_height="50dp"
         app:title="@string/app_name"
         app:titleCentered="true"
-        app:logo="@mipmap/ic_launcher"
+        app:navigationIconTint="?android:textColor"
+        app:navigationIcon="@drawable/baseline_home_48"
         >
 
         <de.hdodenhof.circleimageview.CircleImageView

@@ -1,22 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".post.ViewPostActivity">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/post_user_image"
+    <ImageButton
+        android:id="@+id/post_back"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:src="@drawable/baseline_person_outline_48"
+        android:layout_gravity="center_vertical"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/post_back_desc"
+        android:src="@drawable/baseline_arrow_back_new_24"
+        app:tint="?android:textColor"
+        />
+
+    <View
+        android:id="@+id/post_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         />
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/post_top_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/post_parent"
+        android:layout_marginTop="@dimen/default_margin"
+        android:layout_marginHorizontal="@dimen/default_margin"
+        >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <ImageView
+                android:id="@+id/post_image"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:contentDescription="@string/post_imageview_desc"
+                android:scaleType="fitXY"
+                app:layout_constraintDimensionRatio="H,4:3"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.media3.ui.PlayerView
+                android:id="@+id/post_video"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:contentDescription="@string/post_imageview_desc"
+                app:layout_constraintDimensionRatio="H,4:3"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:resize_mode="fill"
+                />
+
+            <ProgressBar
+                android:id="@+id/post_load_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <View
+        android:id="@+id/post_separator_1"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?android:textColor"
+        android:layout_marginHorizontal="12dp"
+        android:layout_below="@id/post_parent"
+        android:layout_marginVertical="@dimen/default_margin"
+        android:layout_centerHorizontal="true"
+        />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/post_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_user_card"
+        android:layout_marginStart="@dimen/default_margin"
+        android:layout_marginTop="@dimen/default_margin"
+        android:layout_marginEnd="@dimen/default_margin"
+        android:layout_marginBottom="@dimen/default_margin"
+        android:letterSpacing="0.1"
+        android:maxLines="3"
+        android:text="@string/placeholder_multiline"
+        android:textSize="20sp"
+        app:fontFamily="@font/roboto"
+        android:layout_centerHorizontal="true"
+        android:textAlignment="textStart"
+        android:gravity="start"
+        />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/post_user_card"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
         android:layout_toEndOf="@id/post_user_image"
+        android:layout_below="@id/post_separator_1"
+        android:layout_centerHorizontal="true"
         >
 
         <LinearLayout
@@ -52,87 +145,33 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/post_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/post_top_card"
-        android:layout_marginStart="@dimen/default_margin"
-        android:layout_marginTop="@dimen/default_margin"
-        android:layout_marginEnd="@dimen/default_margin"
-        android:layout_marginBottom="@dimen/default_margin"
-        android:letterSpacing="0.1"
-        android:maxLength="400"
-        android:text="@string/placeholder_multiline"
-        android:textSize="20sp"
-        app:fontFamily="@font/roboto" />
-
-
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/post_parent"
-        android:layout_marginTop="@dimen/default_margin"
-        android:layout_marginHorizontal="@dimen/default_margin"
-        android:layout_below="@id/post_text"
-        >
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
-
-            <ImageView
-                android:id="@+id/post_image"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:contentDescription="@string/post_imageview_desc"
-                android:scaleType="fitXY"
-                app:layout_constraintDimensionRatio="H,4:3"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-            <androidx.media3.ui.PlayerView
-                android:id="@+id/post_video"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:contentDescription="@string/post_imageview_desc"
-                app:layout_constraintDimensionRatio="H,4:3"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:resize_mode="fill"
-                />
-
-            <ProgressBar
-                android:id="@+id/post_load_progress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </com.google.android.material.card.MaterialCardView>
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/post_user_image"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/baseline_person_outline_48"
+        android:layout_below="@id/post_separator_1"
+        />
 
     <View
-        android:id="@+id/post_separator_1"
+        android:id="@+id/post_separator_2"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="?android:textColor"
         android:layout_marginHorizontal="12dp"
-        android:layout_below="@id/post_parent"
-        android:layout_marginVertical="@dimen/default_margin"
+        android:layout_below="@id/post_text"
+        android:layout_marginBottom="@dimen/default_margin"
         />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/post_engagement_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/post_separator_1"
+        android:layout_below="@id/post_separator_2"
         android:layout_marginHorizontal="4dp"
         android:layout_marginBottom="8dp"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
         >
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/post_like_card"
@@ -225,42 +264,6 @@
                     android:textSize="18sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-    </androidx.appcompat.widget.LinearLayoutCompat>
-    <View
-        android:id="@+id/post_separator_2"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="?android:textColor"
-        android:layout_marginHorizontal="12dp"
-        android:layout_below="@id/post_engagement_layout"
-        android:layout_marginBottom="@dimen/default_margin"
-        />
-
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/post_shard_by_parent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/default_margin"
-        android:layout_below="@id/post_separator_2"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        >
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/post_shared_by_image"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:layout_marginEnd="@dimen/default_margin"
-            />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/post_shared_by_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/shared_by_text"
-            android:textSize="20sp"
-            android:textColor="@color/gray"
-            />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
 </RelativeLayout>

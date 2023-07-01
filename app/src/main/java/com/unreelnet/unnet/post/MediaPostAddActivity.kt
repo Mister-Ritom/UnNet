@@ -9,6 +9,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -27,7 +29,6 @@ class MediaPostAddActivity : AppCompatActivity() {
     private var user:FirebaseUser? = null
     private val database = FirebaseDatabase.getInstance().reference
 
-    private var uri:Uri? = null
     private var mediaType:MediaTypes? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,17 +62,21 @@ class MediaPostAddActivity : AppCompatActivity() {
         } else finish()
     }
 
-    private fun setupView() {
+    private fun setupView(uri: Uri?) {
         if (mediaType!=null&&uri!=null && user!=null) {
             if (mediaType==MediaTypes.PHOTO) {
                 Glide.with(this).load(uri).into(binding.postImage)
             }
             else {
-                binding.postVideo.setVideoURI(uri)
-                binding.postVideo.start()
+                ExoPlayer.Builder(this).build().also {
+                    binding.postVideo.player = it
+                    val mediaItem = MediaItem.fromUri(uri)
+                    it.setMediaItem(mediaItem)
+                    it.playWhenReady = true
+                }
             }
             binding.postSubmit.setOnClickListener {
-                uploadPost()
+                uploadPost(uri)
             }
         } else {
             displayToast("Something went wrong")
@@ -79,16 +84,16 @@ class MediaPostAddActivity : AppCompatActivity() {
         }
     }
 
-    private fun uploadPost() {
+    private fun uploadPost(uri:Uri?) {
         binding.postProgressLayout.visibility = View.VISIBLE
         val postUid = UUID.randomUUID().toString()
         if (uri!=null&&mediaType!=null&&user!=null) {
             FirebaseStorage.getInstance().reference
                 .child("Posts").child(user!!.uid).child(mediaType!!.name).child(postUid)
-                .putFile(uri!!).addOnSuccessListener {
+                .putFile(uri).addOnSuccessListener {
                     binding.postStatus.text = getString(R.string.uploaded_text)
                     it.storage.downloadUrl.addOnSuccessListener {
-                        addToDatabase(postUid,uri)
+                        addToDatabase(postUid,it)
                     }
                         .addOnFailureListener {
                             Log.e(tag,"Couldn't get download url",it)
@@ -140,8 +145,7 @@ class MediaPostAddActivity : AppCompatActivity() {
     }
 
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        this.uri = uri
-        setupView()
+        setupView(uri)
     }
 
     companion object {

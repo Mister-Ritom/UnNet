@@ -27,7 +27,7 @@
     <string name="posting_failed_text">Posting failed</string>
     <string name="likes_text">%s Likes</string>
     <string name="post_heart_desc">Heart image for liking post</string>
-    <string name="share_text">%s ReShared</string>
+    <string name="share_text">%s shares</string>
     <string name="comments_text">%s comments</string>
     <string name="search_hint">User\'s name</string>
     <string name="profile_string">%s\'s profile</string>
