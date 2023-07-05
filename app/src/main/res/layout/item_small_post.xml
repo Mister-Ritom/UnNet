@@ -56,7 +56,6 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:contentDescription="@string/post_imageview_desc"
-                    android:scaleType="fitXY"
                     app:layout_constraintDimensionRatio="H,4:3"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+    <include android:id="@+id/comment_user" layout="@layout/item_user" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/default_margin"
+        android:layout_gravity="center"
+        >
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/comment_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/placeholder_multiline"
+            android:padding="@dimen/default_padding"
+            android:fontFamily="@font/roboto"
+            android:textSize="18sp"
+            android:maxLength="500"
+            android:gravity="start"
+            />
+    </com.google.android.material.card.MaterialCardView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/gray"
+        android:layout_marginVertical="8dp"
+        />
+
+</LinearLayout>

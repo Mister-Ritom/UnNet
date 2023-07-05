@@ -17,7 +17,7 @@
     <string name="sign_in_cancelled">Sign in cancelled by user</string>
     <string name="no_internet_connection">Error: No internet connection</string>
     <string name="unknown_error">Error:Unknown Error</string>
-    <string name="home_profile_text">My Profile</string>
+    <string name="home_profile_text">My profile</string>
     <string name="home_sign_out_text">Sign out</string>
     <string name="home_text">Home</string>
     <string name="add_post_text">Add post</string>
@@ -52,5 +52,12 @@
     <string name="uploaded_text">Your post successfully uploaded 😎</string>
     <string name="database_adding_text">Adding to database 😊</string>
     <string name="shared_by_text">Shared by %s</string>
+    <string name="post_by_text">Post by %s</string>
+    <string name="add_comment_text">Comment what you feel</string>
+    <string name="send_comment_desc">Send your comment</string>
+    <string name="edit_post_text">Edit Post</string>
+    <string name="username_hint">Username</string>
+    <string name="submit_text">Submit</string>
+    <string name="edit_profile_text">Edit profile</string>
 
 </resources>

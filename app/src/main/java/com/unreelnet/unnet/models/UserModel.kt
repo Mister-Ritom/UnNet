@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class UserModel(val userId:String, var email:String?,var phone:String?,
+data class UserModel(val userId:String,var username:String, var email:String?,var phone:String?,
                      var name:String, var profileImage:String) : Parcelable {
-    constructor():this("",null,null,"","")
+    constructor():this("","",null,null,"","")
 }

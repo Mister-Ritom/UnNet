@@ -32,7 +32,7 @@ class UserRecyclerViewAdapter(private val context:Context?,options: FirebaseRecy
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int, model: UserModel) {
         holder.profileName.text = model.name
-        holder.profileUsername.text = model.userId
+        holder.profileUsername.text = model.username
         Glide.with(holder.itemView).load(model.profileImage).dontAnimate().into(holder.profileImage)
         holder.itemView.setOnClickListener {
             if (context!=null) {

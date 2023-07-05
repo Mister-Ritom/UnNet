@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginTop="@dimen/default_margin">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/add_comment_comments"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/add_comment_input_layout"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_comment"
+        android:layout_marginHorizontal="@dimen/default_margin"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/add_comment_input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:padding="@dimen/default_padding"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/add_comment_input"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:hint="@string/add_comment_text"
+                android:layout_marginHorizontal="@dimen/default_margin"
+                android:padding="@dimen/default_padding"
+                />
+
+            <ImageButton
+                android:id="@+id/add_comment_send"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/baseline_send_48"
+                android:background="@android:color/transparent"
+                android:layout_gravity="center"
+                android:contentDescription="@string/send_comment_desc" />
+        </LinearLayout>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+</RelativeLayout>

@@ -5,6 +5,10 @@
         android:title="@string/home_profile_text"
         />
     <item
+        android:id="@+id/home_edit_profile"
+        android:title="@string/edit_profile_text"
+        />
+    <item
         android:id="@+id/home_sign_out"
         android:title="@string/home_sign_out_text"
         />

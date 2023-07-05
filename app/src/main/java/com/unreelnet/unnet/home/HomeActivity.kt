@@ -1,5 +1,6 @@
 package com.unreelnet.unnet.home
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
@@ -8,7 +9,9 @@ import android.util.Log
 import android.view.MenuItem
 import android.widget.PopupMenu
 import android.widget.Toast
-import androidx.core.content.res.ResourcesCompat
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import com.avatarfirst.avatargenlib.AvatarGenerator
 import com.bumptech.glide.Glide
@@ -19,6 +22,7 @@ import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -30,6 +34,7 @@ import com.unreelnet.unnet.home.fragments.PostAddFragment
 import com.unreelnet.unnet.home.fragments.PostViewFragment
 import com.unreelnet.unnet.home.fragments.SearchFragment
 import com.unreelnet.unnet.models.UserModel
+import com.unreelnet.unnet.profile.EditProfileActivity
 import com.unreelnet.unnet.profile.ViewProfileActivity
 import java.io.ByteArrayOutputStream
 import java.util.UUID
@@ -112,6 +117,12 @@ class HomeActivity : AppCompatActivity(),OnItemSelectedListener {
                         }
                         return@setOnMenuItemClickListener true
                     }
+                    R.id.home_edit_profile -> {
+                        val intent = Intent(this, EditProfileActivity::class.java)
+                        intent.putExtra("user",user)
+                        startForResult.launch(intent)
+                        return@setOnMenuItemClickListener true
+                    }
                     else ->
                         return@setOnMenuItemClickListener false
                 }
@@ -151,6 +162,7 @@ class HomeActivity : AppCompatActivity(),OnItemSelectedListener {
                         .getReference("Users/${user.uid}/ProfileImages")
                         .child(UUID.randomUUID().toString()).putBytes(data).addOnSuccessListener {
                             it.storage.downloadUrl.addOnSuccessListener {uri->
+                                user.updateProfile(UserProfileChangeRequest.Builder().setPhotoUri(uri).build())
                                 photoUrl = uri.toString()
                                 uploadUser(user,name,photoUrl)
                             }
@@ -181,7 +193,7 @@ class HomeActivity : AppCompatActivity(),OnItemSelectedListener {
     }
 
     private fun uploadUser(user: FirebaseUser, name:String, photoUrl:String) {
-        val userModel = UserModel(user.uid,user.email,user.phoneNumber
+        val userModel = UserModel(user.uid,user.uid,user.email,user.phoneNumber
             ,name,photoUrl)
         databaseReference.child("Users").child(user.uid).setValue(userModel).addOnSuccessListener {
             setupView(userModel)
@@ -221,9 +233,19 @@ class HomeActivity : AppCompatActivity(),OnItemSelectedListener {
             }
         }
         binding.homeToolbar.title = title
-        binding.homeToolbar.navigationIcon = getDrawable(logo)
+        binding.homeToolbar.navigationIcon = AppCompatResources.getDrawable(this@HomeActivity,logo)
         supportFragmentManager.beginTransaction().replace(R.id.home_frame,fragment).commit()
         return true
+    }
+
+    private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val intent = result.data
+            val userModel = intent?.getParcelableExtra<UserModel>("user")
+            if (userModel!=null) {
+                setupView(userModel)
+            }
+        }
     }
 
 }

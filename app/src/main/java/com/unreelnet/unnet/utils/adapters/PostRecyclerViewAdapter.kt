@@ -1,7 +1,5 @@
 package com.unreelnet.unnet.utils.adapters
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
@@ -11,7 +9,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateInterpolator
 import android.widget.Toast
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -33,6 +30,8 @@ import com.unreelnet.unnet.models.PostModel
 import com.unreelnet.unnet.models.UserModel
 import com.unreelnet.unnet.post.ViewPostActivity
 import com.unreelnet.unnet.profile.ViewProfileActivity
+import com.unreelnet.unnet.utils.reusable.ReusableAnimator
+import com.unreelnet.unnet.utils.reusable.ReusableCode
 
 
 class PostRecyclerViewAdapter(private val context: Context?,var posts:List<PostModel>)
@@ -80,15 +79,17 @@ class PostRecyclerViewAdapter(private val context: Context?,var posts:List<PostM
     override fun getItemCount(): Int {
         return posts.size
     }
-
+    //Use this instead of firebase user.
+    // firebase doesn't have the username.
     private fun setupUser(post: PostModel, holder: ViewHolder) {
+
        databaseReference.child("Users/${post.uploaderId}")
             .addListenerForSingleValueEvent(object:ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val userModel = snapshot.getValue(UserModel::class.java)
                     if (userModel!=null) {
                         holder.userName.text = userModel.name
-                        holder.userId.text = userModel.userId
+                        holder.userId.text = userModel.username
                         Glide.with(holder.itemView).load(userModel.profileImage).into(holder.userImage)
                         if (context!=null) {
                             holder.userImage.setOnClickListener {
@@ -221,19 +222,26 @@ class PostRecyclerViewAdapter(private val context: Context?,var posts:List<PostM
                     databaseReference.child("Posts/${model.uploaderId}/${model.postId}")
                         .child("likes").setValue(model.likes).addOnSuccessListener {
                             holder.likeImage.setColorFilter(context?.resources!!.getColor(R.color.gray),PorterDuff.Mode.SRC_ATOP)
+                            notifyItemChanged(holder.bindingAdapterPosition)
                         }
                 }
                 else {
                     model.likes.add(currentUserId)
                     databaseReference.child("Posts/${model.uploaderId}/${model.postId}")
                         .child("likes").setValue(model.likes).addOnSuccessListener {
-                            animate(holder.likeImage)
+                            ReusableAnimator.animate(holder.likeImage)
                             holder.likeImage.setColorFilter(context?.resources!!.getColor(R.color.red))
+                            notifyItemChanged(holder.bindingAdapterPosition)
                         }
                 }
             }
             holder.commentCard.setOnClickListener {
-                animate(holder.commentImage)
+                if (context != null) {
+                    ReusableCode.setupCommentDialog(currentUserId,context,model) {
+                        notifyItemChanged(holder.bindingAdapterPosition)
+                    }
+                }
+                ReusableAnimator.animate(holder.commentImage)
             }
             holder.reShareCard.setOnClickListener {
                 val model1 = PostModel(model.postId,model.uploaderId,System.currentTimeMillis(),
@@ -244,7 +252,7 @@ class PostRecyclerViewAdapter(private val context: Context?,var posts:List<PostM
                     .setValue(model1).addOnSuccessListener {
                         databaseReference.child("Posts/${model.uploaderId}/${model.postId}")
                             .child("shares").setValue(model1.shares).addOnSuccessListener {
-                                animate(holder.shareImage)
+                                ReusableAnimator.animate(holder.shareImage)
                                 Toast.makeText(context,"Shared post",Toast.LENGTH_LONG).show()
                             }
                     }
@@ -252,9 +260,15 @@ class PostRecyclerViewAdapter(private val context: Context?,var posts:List<PostM
         }
     }
 
+    override fun onViewRecycled(holder: ViewHolder) {
+        holder.postVideo.player?.release()
+        super.onViewRecycled(holder)
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val model = posts[position]
         holder.postProgress.visibility = View.VISIBLE
+        holder.postVideo.player?.release()
 
         setupImage(holder, model)
         setupVideo(holder, model)
@@ -272,26 +286,12 @@ class PostRecyclerViewAdapter(private val context: Context?,var posts:List<PostM
         holder.shareText.text = context?.getString(R.string.share_text,model.shares.size.toString())
         holder.likeText.text = context?.getString(R.string.likes_text,model.likes.size.toString())
     }
-
-    private fun animate(view:View) {
-        val animationSet = AnimatorSet()
-        val accelerateInterpolator = AccelerateInterpolator()
-        view.scaleX = 0.1F
-        view.scaleY = 0.1F
-        val scaleDownY = ObjectAnimator.ofFloat(view, "scaleY", 0.1f, 1f)
-        scaleDownY.duration = 300
-        scaleDownY.interpolator = accelerateInterpolator
-        val scaleDownX = ObjectAnimator.ofFloat(view, "scaleX", 0.1f, 1f)
-        scaleDownX.duration = 300
-        scaleDownX.interpolator = accelerateInterpolator
-        animationSet.playTogether(scaleDownX,scaleDownY)
-        animationSet.start()
-    }
     
     inner class ViewHolder(binding: ItemPostBinding) : RecyclerView.ViewHolder(binding.root) {
-        val userName = binding.postUserName
-        val userId = binding.postUserId
-        val userImage = binding.postUserImage
+        private val userBindding = binding.postUserLayout
+        val userName = userBindding.userProfileName
+        val userId = userBindding.userProfileUsername
+        val userImage = userBindding.userProfileImage
         val likeCard = binding.postLikeCard
         val likeImage = binding.postHeart
         val likeText = binding.postLikeText

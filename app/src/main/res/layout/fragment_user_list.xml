@@ -8,27 +8,28 @@
     android:orientation="vertical"
     >
 
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/default_margin"
-        android:layout_marginVertical="8dp"
-        >
-        <EditText
-            android:id="@+id/user_search"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/add_comment_input_layout"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:ems="10"
-            android:inputType="text"
-            android:hint="@string/search_hint"
-            android:autofillHints="name"
-            android:drawableStart="@drawable/baseline_search_48"
-            android:drawableTint="@color/gray"
-            android:background="@android:color/transparent"
-            android:padding="8dp"
-            android:layout_margin="8dp"
-            />
-    </com.google.android.material.card.MaterialCardView>
+            android:layout_height="wrap_content"
+            android:padding="@dimen/default_padding"
+            app:startIconDrawable="@drawable/baseline_search_48"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/user_search"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:ems="10"
+                android:inputType="text"
+                android:hint="@string/search_hint"
+                android:autofillHints="name"
+                android:drawableTint="@color/gray"
+                android:background="@android:color/transparent"
+                android:layout_margin="8dp"
+                android:padding="@dimen/default_padding"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list"
@@ -37,5 +38,7 @@
         android:layout_height="wrap_content"
         app:layoutManager="LinearLayoutManager"
         tools:context=".home.fragments.SearchFragment"
-        tools:listitem="@layout/item_user" />
+        tools:listitem="@layout/item_user"
+        android:layout_marginStart="@dimen/default_margin"
+        />
 </LinearLayout>
