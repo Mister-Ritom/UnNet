@@ -4,18 +4,16 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.PorterDuff
-import android.graphics.drawable.GradientDrawable
 import android.media.MediaMetadataRetriever
+import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.palette.graphics.Palette
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -28,7 +26,7 @@ import com.unreelnet.unnet.databinding.ActivityViewPostBinding
 import com.unreelnet.unnet.models.PostModel
 import com.unreelnet.unnet.models.UserModel
 import com.unreelnet.unnet.utils.adapters.CommentRecyclerViewAdapter
-import com.unreelnet.unnet.utils.reusable.OnLoadCallback
+import com.unreelnet.unnet.utils.reusable.Callback
 import com.unreelnet.unnet.utils.reusable.ReusableAnimator
 import com.unreelnet.unnet.utils.reusable.ReusableCode
 import kotlin.random.Random
@@ -55,15 +53,20 @@ class ViewPostActivity : AppCompatActivity() {
             binding.postBack.setOnClickListener { finish() }
             binding.postComments.adapter = CommentRecyclerViewAdapter(this,post.comments)
 
-            if (post.imageUri==null)binding.postImage.visibility = View.GONE
-            else{
-                binding.postImage.visibility = View.VISIBLE
-                setupImage(post)
+            if (post.media==null){
+                binding.postParent.visibility = View.GONE
             }
-            if (post.videoUri==null)
-                binding.postVideo.visibility = View.GONE
-            else {
-                setupVideo(post)
+            else{
+                binding.postParent.visibility = View.VISIBLE
+                if (post.media.mediaType==PostModel.MediaType.PHOTO) {
+                    binding.postImage.visibility = View.VISIBLE
+                    setupImage(post)
+                }
+
+                else {
+                    binding.postVideo.visibility = View.VISIBLE
+                    setupVideo(Uri.parse(post.media.uri))
+                }
             }
 
             if (post.text==null)binding.postText.visibility = View.GONE
@@ -77,7 +80,7 @@ class ViewPostActivity : AppCompatActivity() {
     }
 
     private fun setupImage(post:PostModel) {
-        Glide.with(this).asBitmap().load(post.imageUri).listener(object:
+        Glide.with(this).asBitmap().load(post.media?.uri).listener(object:
             RequestListener<Bitmap> {
             override fun onLoadFailed(
                 e: GlideException?,
@@ -97,50 +100,24 @@ class ViewPostActivity : AppCompatActivity() {
                 dataSource: DataSource?,
                 isFirstResource: Boolean
             ): Boolean {
-                    Palette.Builder(resource).generate {
-                        val dominantColorInt = it?.getDominantColor(resources.getColor(R.color.crimson))
-                        val mutedColorInt = it?.getMutedColor(resources.getColor(R.color.crimson))
-                        if (dominantColorInt!=null && mutedColorInt != null) {
-                            val colorArray:IntArray = intArrayOf(dominantColorInt,mutedColorInt)
-                            val drawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                                colorArray)
-                            runOnUiThread {
-                                binding.postLoadProgress.visibility = View.GONE
-                                binding.postBackground.setBackgroundDrawable(drawable)
-                                binding.postImage.setImageBitmap(resource)
-                            } }
-                    }
+                ReusableCode.setBackground(resource,binding.postBackground)
+                runOnUiThread {
+                    binding.postLoadProgress.visibility = View.GONE
+                    binding.postImage.setImageBitmap(resource)
+                }
                 return true
             }
         }).submit()
     }
 
-    private fun setupVideo(post: PostModel) {
-        binding.postVideo.visibility = View.VISIBLE
-        ExoPlayer.Builder(this).build().also {
-            binding.postVideo.player = it
-            val mediaItem = MediaItem.fromUri(post.videoUri!!)
-            it.setMediaItem(mediaItem)
-            it.playWhenReady = true
+    private fun setupVideo(uri:Uri) {
+        ReusableCode.setupExoPlayer(this,binding.postVideo,uri).also {
             it.addListener(object : Player.Listener {
                 override fun onPlaybackStateChanged(playbackState: Int) {
                     if (playbackState == ExoPlayer.STATE_READY) {
                         binding.postLoadProgress.visibility = View.GONE
-                        BackgroundSetter(it.duration,post.videoUri) { resource ->
-                            Palette.Builder(resource).generate {p->
-                                val dominantColorInt = p?.getDominantColor(resources.getColor(R.color.crimson))
-                                val mutedColorInt = p?.getMutedColor(resources.getColor(R.color.crimson))
-                                if (dominantColorInt != null && mutedColorInt != null) {
-                                    val colorArray: IntArray = intArrayOf(dominantColorInt, mutedColorInt)
-                                    val drawable = GradientDrawable(
-                                        GradientDrawable.Orientation.TOP_BOTTOM,
-                                        colorArray
-                                    )
-                                    runOnUiThread {
-                                        binding.postBackground.setBackgroundDrawable(drawable)
-                                    }
-                                }
-                            }
+                        BackgroundSetter(it.duration,uri) { resource ->
+                            ReusableCode.setBackground(resource,binding.postBackground)
                         }.execute()
                     }
                     super.onPlaybackStateChanged(playbackState)
@@ -182,7 +159,7 @@ class ViewPostActivity : AppCompatActivity() {
             }
             binding.postShareCard.setOnClickListener {
                 val model1 = PostModel(model.postId,model.uploaderId,System.currentTimeMillis(),
-                    model.text,model.imageUri,model.videoUri,model.likes,model.comments,
+                    model.text,model.media,model.visibility,model.likes,model.comments,
                     model.shares,currentUserId)
                 model1.shares.add(currentUserId)
                 databaseReference.child("Posts").child(currentUserId).child(model.postId)
@@ -203,7 +180,7 @@ class ViewPostActivity : AppCompatActivity() {
         binding.postVideo.player?.release()
     }
 
-    class BackgroundSetter(private val duration:Long,private val s:String,private val callback: OnLoadCallback) : AsyncTask<Unit,Unit,Unit>(){
+    class BackgroundSetter(private val duration:Long,private val uri:Uri,private val callback: Callback<Bitmap>) : AsyncTask<Unit,Unit,Unit>(){
         private val tag = "BackgroundSetter"
         @Deprecated("Deprecated in Java")
         private fun getVideoFrame(s:String):Bitmap? {
@@ -221,9 +198,7 @@ class ViewPostActivity : AppCompatActivity() {
             } finally {
 
                 try {
-
                     retriever.release()
-
                 } catch (e:RuntimeException) {
                     Log.e(tag,"Something went wrong",e)
                 }
@@ -235,9 +210,9 @@ class ViewPostActivity : AppCompatActivity() {
 
         @Deprecated("Deprecated in Java")
         override fun doInBackground(vararg time: Unit?) {
-            val bitmap = getVideoFrame(s)
+            val bitmap = getVideoFrame(uri.toString())
             if (bitmap!=null) {
-                callback.onLoad(bitmap)
+                callback.onCall(bitmap)
             }
         }
     }

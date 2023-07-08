@@ -1,6 +1,6 @@
 package com.unreelnet.unnet.utils.reusable;
 
 @FunctionalInterface
-public interface Callback {
-    void onCall();
+public interface Callback<T> {
+    void onCall(T item);
 }

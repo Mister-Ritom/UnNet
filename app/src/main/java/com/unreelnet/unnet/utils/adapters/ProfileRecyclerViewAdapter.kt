@@ -1,6 +1,7 @@
 package com.unreelnet.unnet.utils.adapters
 
 import android.content.Context
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import com.unreelnet.unnet.databinding.ItemSmallPostBinding
 import com.unreelnet.unnet.models.PostModel
 import com.unreelnet.unnet.models.UserModel
 import com.unreelnet.unnet.post.ViewPostActivity
+import com.unreelnet.unnet.utils.reusable.ReusableCode
 
 
 open class ProfileRecyclerViewAdapter(private val context: Context?, private val user:UserModel,options: FirebaseRecyclerOptions<PostModel>)
@@ -41,11 +43,12 @@ open class ProfileRecyclerViewAdapter(private val context: Context?, private val
             holder.postText.visibility = View.VISIBLE
             holder.postText.text=model.text
         }
-        if (model.imageUri==null)holder.postImageParent.visibility= View.GONE
+        if (model.media==null)holder.postImageParent.visibility= View.GONE
         else {
-            holder.postImageParent.visibility = View.VISIBLE
-            Glide.with(context!!).asBitmap()
-                .load(model.imageUri).into(holder.postImage)
+            if (context!=null&&model.media.mediaType==PostModel.MediaType.PHOTO) {
+                holder.postImageParent.visibility = View.VISIBLE
+                ReusableCode.loadPostImage(context,holder.postImage,holder.postProgress,Uri.parse(model.media.uri))
+            }
         }
         holder.itemView.setOnClickListener {
             if (context != null) {
@@ -68,6 +71,7 @@ open class ProfileRecyclerViewAdapter(private val context: Context?, private val
         val postImage = binding.postImage
         val postImageParent = binding.postParent
         val postText = binding.postText
+        val postProgress = binding.postLoadProgress
     }
 
 }

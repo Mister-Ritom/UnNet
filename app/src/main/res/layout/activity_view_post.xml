@@ -40,9 +40,9 @@
         </com.google.android.material.appbar.MaterialToolbar>
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/post_parent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/post_parent"
             android:layout_marginTop="@dimen/default_margin"
             android:layout_marginHorizontal="@dimen/default_margin"
             android:layout_below="@id/post_toolbar"

@@ -3,6 +3,7 @@ package com.unreelnet.unnet.home
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -28,6 +29,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.unreelnet.unnet.R
 import com.unreelnet.unnet.databinding.ActivityHomeBinding
 import com.unreelnet.unnet.home.fragments.PostAddFragment
@@ -44,6 +46,8 @@ class HomeActivity : AppCompatActivity(),OnItemSelectedListener {
     private val databaseReference = FirebaseDatabase.getInstance().reference
     private lateinit var binding: ActivityHomeBinding
     private lateinit var signInIntent:Intent
+
+    private lateinit var postAddFragment:PostAddFragment
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
@@ -74,7 +78,28 @@ class HomeActivity : AppCompatActivity(),OnItemSelectedListener {
             signInLauncher.launch(signInIntent)
         }
         else {
+            setupFragment(currentUser.uid)
             getCurrentUser(currentUser.uid)
+        }
+    }
+
+    private fun setupFragment(uid:String) {
+        val postId = UUID.randomUUID().toString()
+        postAddFragment = PostAddFragment(postId) {media->
+            FirebaseStorage.getInstance().reference
+                .child("Posts").child(uid).child(postId)
+                .putFile(Uri.parse(media.uri)).addOnSuccessListener {task->
+                    task.storage.downloadUrl.addOnSuccessListener {
+                        media.uri = it.toString()
+                        databaseReference.child("Posts").child(uid)
+                            .child(postId).child("media")
+                            .setValue(media)
+                            .addOnSuccessListener {
+                                databaseReference.child("Posts").child(uid)
+                                    .child(postId).child("visibility")
+                            }
+                    }
+                }
         }
     }
 
@@ -101,6 +126,7 @@ class HomeActivity : AppCompatActivity(),OnItemSelectedListener {
     }
 
     private fun setupView(user: UserModel) {
+        setupFragment(user.userId)
         Glide.with(this).load(user.profileImage).dontAnimate().into(binding.homeProfileImage)
         binding.homeProfileImage.setOnClickListener {
             val popup = PopupMenu(this@HomeActivity,binding.homeProfileImage)
@@ -222,7 +248,8 @@ class HomeActivity : AppCompatActivity(),OnItemSelectedListener {
                 logo = R.drawable.baseline_home_48
             }
             R.id.add_post -> {
-                fragment = PostAddFragment()
+                val postId = UUID.randomUUID().toString()
+                fragment = postAddFragment
                 title = getString(R.string.add_post_text)
                 logo = R.drawable.baseline_add_48
             }
@@ -237,6 +264,8 @@ class HomeActivity : AppCompatActivity(),OnItemSelectedListener {
         supportFragmentManager.beginTransaction().replace(R.id.home_frame,fragment).commit()
         return true
     }
+
+
 
     private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {

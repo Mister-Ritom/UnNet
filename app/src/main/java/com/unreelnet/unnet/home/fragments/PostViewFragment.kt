@@ -116,7 +116,7 @@ class PostViewFragment : Fragment() {
                     if (snapshot.exists()) {
                         for (postSnapshot in snapshot.children) {
                             val postModel = postSnapshot.getValue(PostModel::class.java)
-                            if (postModel!=null) {
+                            if (postModel!=null&&postModel.visibility == PostModel.PostVisibility.VISIBLE) {
                                 posts.add(postModel)
                             }
                         }

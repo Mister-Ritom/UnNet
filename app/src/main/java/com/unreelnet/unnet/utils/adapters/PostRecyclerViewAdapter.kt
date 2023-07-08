@@ -2,23 +2,16 @@ package com.unreelnet.unnet.utils.adapters
 
 import android.content.Context
 import android.graphics.PorterDuff
-import android.graphics.drawable.Drawable
-import android.os.Handler
-import android.os.Looper
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -65,10 +58,12 @@ class PostRecyclerViewAdapter(private val context: Context?,var posts:List<PostM
             POST_TYPE_IMAGE -> {
                 holder.postText.visibility = View.GONE
                 holder.postVideo.visibility = View.GONE
+                holder.postImage.visibility = View.VISIBLE
             }
             POST_TYPE_VIDEO -> {
                 holder.postText.visibility = View.GONE
                 holder.postImage.visibility = View.GONE
+                holder.postVideo.visibility = View.VISIBLE
             }
         }
 
@@ -144,69 +139,37 @@ class PostRecyclerViewAdapter(private val context: Context?,var posts:List<PostM
 
     override fun getItemViewType(position: Int): Int {
         val model = posts[position]
-        if (model.imageUri==null&&model.videoUri==null)return POST_TYPE_TEXT
+        if (model.media==null || model.media.mediaType==PostModel.MediaType.UNDEFINED)return POST_TYPE_TEXT
         if (model.text==null) {
-            if (model.videoUri==null)return POST_TYPE_IMAGE
-            else if (model.imageUri==null) return POST_TYPE_VIDEO
+            if (model.media.mediaType==PostModel.MediaType.PHOTO)return POST_TYPE_IMAGE
+            else if (model.media.mediaType==PostModel.MediaType.VIDEO) return POST_TYPE_VIDEO
         }
         else {
-            if (model.videoUri==null)return POST_TYPE_IMAGE_TEXT
-            else if (model.imageUri==null) return POST_TYPE_VIDEO_TEXT
+            if (model.media.mediaType==PostModel.MediaType.PHOTO)return POST_TYPE_IMAGE_TEXT
+            else if (model.media.mediaType==PostModel.MediaType.VIDEO) return POST_TYPE_VIDEO_TEXT
         }
         return super.getItemViewType(position)
     }
 
     private fun setupImage(holder: ViewHolder, model:PostModel) {
-        if (model.imageUri!=null) {
-            Glide.with(holder.itemView).load(model.imageUri).listener(object:RequestListener<Drawable> {
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    a: Any?,
-                    target: Target<Drawable>?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    Log.e(tag,"Couldn't load post ${model.postId}")
-                    Toast.makeText(context, "Couldn't load post", Toast.LENGTH_SHORT).show()
-                    return true
-                }
-
-                override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    dataSource: DataSource?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    Handler(Looper.getMainLooper()).post {
-                        holder.postImage.setImageDrawable(resource)
-                        holder.postProgress.visibility = View.GONE
-                    }
-                    return true
-                }
-
-            }).submit()
+        if (context!=null&&model.media!=null&&model.media.mediaType==PostModel.MediaType.PHOTO) {
+            ReusableCode.loadPostImage(context,holder.postImage,holder.postProgress,Uri.parse(model.media.uri))
         }
     }
 
     private fun setupVideo(holder: ViewHolder, model:PostModel) {
-        if (model.videoUri!=null && context!=null) {
-            ExoPlayer.Builder(context).build().also {
-                holder.postVideo.player = it
-                val mediaItem = MediaItem.fromUri(model.videoUri)
-                it.setMediaItem(mediaItem)
-                it.play()
-                it.playWhenReady = true
-            }
-
-            holder.postVideo.visibility = View.VISIBLE
-            holder.postVideo.player?.addListener(object : Player.Listener {
-                override fun onIsPlayingChanged(isPlaying: Boolean) {
-                    if (isPlaying) {
-                        holder.postProgress.visibility = View.GONE
-                    }
-                    super.onIsPlayingChanged(isPlaying)
+        if (model.media!=null && model.media.mediaType==PostModel.MediaType.VIDEO && context!=null) {
+            ReusableCode.setupExoPlayer(context,holder.postVideo, Uri.parse(model.media.uri))
+                .also {
+                    it.addListener(object : Player.Listener {
+                        override fun onPlaybackStateChanged(playbackState: Int) {
+                            if (playbackState == ExoPlayer.STATE_READY) {
+                                holder.postProgress.visibility = View.GONE
+                            }
+                            super.onPlaybackStateChanged(playbackState)
+                        }
+                    })
                 }
-            })
         }
     }
 
@@ -245,7 +208,7 @@ class PostRecyclerViewAdapter(private val context: Context?,var posts:List<PostM
             }
             holder.reShareCard.setOnClickListener {
                 val model1 = PostModel(model.postId,model.uploaderId,System.currentTimeMillis(),
-                    model.text,model.imageUri,model.videoUri,model.likes,model.comments,
+                    model.text,model.media,model.visibility,model.likes,model.comments,
                     model.shares,currentUserId)
                 model1.shares.add(currentUserId)
                 databaseReference.child("Posts").child(currentUserId).child(model.postId)
@@ -288,10 +251,10 @@ class PostRecyclerViewAdapter(private val context: Context?,var posts:List<PostM
     }
     
     inner class ViewHolder(binding: ItemPostBinding) : RecyclerView.ViewHolder(binding.root) {
-        private val userBindding = binding.postUserLayout
-        val userName = userBindding.userProfileName
-        val userId = userBindding.userProfileUsername
-        val userImage = userBindding.userProfileImage
+        private val userBinding = binding.postUserLayout
+        val userName = userBinding.userProfileName
+        val userId = userBinding.userProfileUsername
+        val userImage = userBinding.userProfileImage
         val likeCard = binding.postLikeCard
         val likeImage = binding.postHeart
         val likeText = binding.postLikeText

@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/default_margin"
-        android:layout_marginTop="@dimen/default_margin"
+        android:layout_marginTop="@dimen/margin_small"
         />
 
     <com.google.android.material.textview.MaterialTextView
@@ -19,10 +19,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/post_user_layout"
-        android:layout_marginStart="@dimen/default_margin"
-        android:layout_marginTop="@dimen/default_margin"
-        android:layout_marginEnd="@dimen/default_margin"
-        android:layout_marginBottom="@dimen/default_margin"
+        android:layout_marginHorizontal="@dimen/default_margin"
+        android:layout_marginVertical="@dimen/margin_small"
         android:letterSpacing="0.1"
         android:maxLength="400"
         android:text="@string/placeholder_multiline"
@@ -34,7 +32,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/post_parent"
-        android:layout_marginTop="@dimen/default_margin"
         android:layout_marginHorizontal="@dimen/default_margin"
         android:layout_below="@id/post_text"
         >
@@ -86,12 +83,12 @@
         android:background="?android:textColor"
         android:layout_marginHorizontal="12dp"
         android:layout_below="@id/post_parent"
-        android:layout_marginVertical="@dimen/default_margin"
+        android:layout_marginVertical="@dimen/margin_small"
         />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/post_engagement_layout"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/post_separator_1"
         android:layout_marginHorizontal="4dp"
@@ -194,7 +191,7 @@
         android:id="@+id/post_separator_2"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="?android:textColor"
+        android:background="@color/gray"
         android:layout_marginHorizontal="12dp"
         android:layout_below="@id/post_engagement_layout"
         android:layout_marginBottom="@dimen/default_margin"
@@ -206,7 +203,6 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/default_margin"
         android:layout_below="@id/post_separator_2"
-        android:layout_centerHorizontal="true"
         android:gravity="center"
         >
 
